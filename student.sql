@@ -1,86 +1,57 @@
-create database student;
+CREATE TABLE Students(
+    ID_student SERIAL NOT NULL PRIMARY KEY,
+    Name_student varchar(15),
+    p_series int NOT NULL,
+    p_num int NOT NULL,
+    Constraint wow unique(p_series, p_num)
+);
+    ALTER TABLE Students ADD CONSTRAINT min_pseries CHECK (p_series between 1000 and 9999);
+    ALTER TABLE Students ADD CONSTRAINT min_pnum CHECK (p_num between 100000 and 999999);
 
-create table student(
-    stud_id serial not null primary key,
-    firstname varchar(20) not null,
-    pasport_series varchar(4) not null,
-    pasport_num varchar(6) not null,
-    constraint pasportunique unique(pasport_series,pasport_num)
-);
-create table subjects(
-    subj_id serial not null primary key,
-    subj_name varchar(20) not null
-);
-create table progress(
-    pr_id serial not null primary key,
-    stud_id int,
-    subj_id int,
-    constraint FK_stud_id foreign key (stud_id) references student(stud_id) match full on delete cascade,
-    constraint FK_subj_id foreign key (subj_id) references subjects(subj_id) match full on delete cascade,
-    mark int not null check(mark>=2 and mark<=5)
+CREATE TABLE Subjects(
+    ID_subject SERIAL NOT NULL PRIMARY KEY,
+    Name_subject varchar(15)
 );
 
+CREATE TABLE Progress(
+    ID_progress SERIAL NOT NULL,
+    ID_student int,
+    CONSTRAINT FK_ID_student FOREIGN KEY(ID_student) REFERENCES Students(ID_student) Match full ON DELETE CASCADE,
+    ID_subject int,
+    CONSTRAINT FK_ID_subject FOREIGN KEY(ID_subject) REFERENCES Subjects(ID_subject) Match full ON DELETE CASCADE,
+    Mark smallint,
+    CONSTRAINT Mark check(Mark in (2,3,4,5))
+);
 
-insert into student values
-(1,'Anton',1111,111111),
-(2,'Bogdan',1112,111112),
-(3,'Vitaly',1113,111113),
-(4,'Georgy',1114,111114),
-(5,'Dima',1115,111115),
-(6,'Egor',1116,111116),
-(7,'Ioan',1117,111117);
+insert into Students values(1,'Рома','3344','123456'),(2,'Дима','4344','223456'),(3,'Кирилл','4444','323456'),(4,'Андрей','4324','423456');
 
-insert into subjects values
-(1,'geometry'),
-(2,'algebra'),
-(3,'english'),
-(4,'russian'),
-(5,'literature');
+insert into Subjects values(1,'Матан'),(2,'Русский'),(3,'История'),(4,'Философия');
 
-insert into progress values
-(1,1,4),
-(2,2,4),
-(3,3,2),
-(1,2,3),
-(2,2,2),
-(3,2,3),
-(1,3,5),
-(2,4,4),
-(3,5,5);
-
-insert into progress values
-(1,4,4),
-(2,5,2),
-(4,5,2),
-(5,4,3),
-(2,5,2),
-(3,3,3),
-(5,4,3),
-(2,3,4),
-(3,5,3);
+insert into Progress values(1,1,1,4),(1,2,1,4),(1,3,1,5),
+(1,1,2,3),(1,2,2,4),(1,3,2,5),
+(1,1,3,3),(1,2,3,3),(1,3,2,5);
 
 
---------------------------------------------------------------------------------------------------------------------------------
-2.select firstname, mark from student as j1
-inner join Progress as j2 on j1.stud_id = j2.stud_id
+select Name_student, mark from student as j1
+inner join Progress as j2 on j1.ID_student = j2.ID_student
 where mark > 3;
 
-7. select subj_name, avg(mark) from subjects as j1
-inner join progress as j2 on j1.subj_id = j2.subj_id
-group by subj_name;
-
-8. select j1.stud_id, firstname, avg(mark) from student as j1
-inner join progress as j2 on j1.stud_id = j2.stud_id
-group by j1.stud_id;
-
-10. select subj_id, subj_name, count(mark) from subjects as j1
-inner join progress as j2 on j1.subj_id = j2.subj_id
-group by subj_name
-order by count(mark) desc limit 3;
-
---------------------------------------------------------------------------------
+2. Select Name_student, Mark from Students as j1
+INNER JOIN Progress as j2 on j1.ID_student = j2.ID_student
+WHERE Mark > 3
 
 
+4. select Name_subject, avg(Mark) from Subjects as j1
+INNER JOIN Progress as j2 on j1.ID_subject = j2.ID_subject
+GROUP BY Name_subject
 
+5. select j1.ID_student, Name_student, avg(Mark) from Students as j1
+INNER JOIN Progress as j2 on j1.ID_student = j2.ID_student
+GROUP BY j1.ID_student;
+
+6. SELECT Name_subject, COUNT(Mark) FROM Subjects AS j1
+INNER JOIN Progress AS j2 on j1.ID_subject = j2.ID_subject
+GROUP BY Name_subject 
+ORDER BY COUNT(Mark) desc limit 3;
 
 
